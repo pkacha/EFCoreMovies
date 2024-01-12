@@ -1,5 +1,6 @@
 using System.Reflection;
 using API.Entities;
+using API.Entities.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure.Internal;
 
@@ -20,6 +21,7 @@ namespace API.Data
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            Module3Seeding.Seed(modelBuilder);
         }
 
         public DbSet<Actor> Actors { get; set; }
