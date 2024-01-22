@@ -1,6 +1,8 @@
 using API.Data;
+using API.DTOs;
 using API.Entities;
 using API.Utilities;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,34 +13,82 @@ namespace API.Controllers
     public class GenresController : ControllerBase
     {
         private readonly ApplicationDbContext _dbContext;
-        public GenresController(ApplicationDbContext dbContext)
+        private readonly IMapper _mapper;
+
+        public GenresController(ApplicationDbContext dbContext, IMapper mapper)
         {
             _dbContext = dbContext;
+            _mapper = mapper;
         }
         [HttpGet]
-        public async Task<IEnumerable<Genre>> Get(int page = 1, int recordsToTake = 2)
+        public async Task<IEnumerable<Genre>> Get()
         {
             return await _dbContext.Genres.AsNoTracking()
                 .OrderBy(g => g.Name)
-                .Paginate(page, recordsToTake)
                 .ToListAsync();
         }
 
-        [HttpGet("first")]
-        public async Task<ActionResult<Genre>> GetFirst()
+        [HttpPost]
+        public async Task<ActionResult> Post(GenreCreationDTO genreCreationDTO)
         {
-            var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Name.Contains("z"));
+            var genre = _mapper.Map<Genre>(genreCreationDTO);
+            _dbContext.Genres.Add(genre);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("several")]
+        public async Task<ActionResult> Post(GenreCreationDTO[] genreCreationDTOs)
+        {
+            var genres = _mapper.Map<Genre[]>(genreCreationDTOs);
+
+            _dbContext.Genres.AddRange(genres);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Id == id);
 
             if (genre is null)
                 return NotFound();
 
-            return genre;
+            _dbContext.Remove(genre);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
         }
 
-        [HttpGet("filter")]
-        public async Task<IEnumerable<Genre>> Filter(string name)
+        [HttpDelete("softdelete/{id:int}")]
+        public async Task<ActionResult> SoftDelete(int id)
         {
-            return await _dbContext.Genres.Where(g => g.Name.Contains(name)).ToListAsync();
+            var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Id == id);
+
+            if (genre is null)
+                return NotFound();
+
+            genre.IsDeleted = true;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpPost("restore/{id:int}")]
+        public async Task<ActionResult> Restore(int id)
+        {
+            var genre = await _dbContext.Genres.IgnoreQueryFilters().FirstOrDefaultAsync(g => g.Id == id);
+
+            if (genre is null)
+                return NotFound();
+
+            genre.IsDeleted = false;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
         }
     }
 }
