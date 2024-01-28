@@ -23,14 +23,44 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IEnumerable<Genre>> Get()
         {
+            _dbContext.Logs.Add(new Log { Message = "Executing Get() from GenresController" });
+            await _dbContext.SaveChangesAsync();
+
             return await _dbContext.Genres.AsNoTracking()
-                .OrderBy(g => g.Name)
+                //.OrderBy(g => g.Name)
+                .OrderByDescending(g => EF.Property<DateTime>(g, "CreatedDate"))
                 .ToListAsync();
         }
+
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<Genre>> Get(int id)
+        {
+            var genre = await _dbContext.Genres.FirstOrDefaultAsync(g => g.Id == id);
+
+            if (genre is null)
+                return NotFound();
+
+            var createDate = _dbContext.Entry(genre).Property<DateTime>("CreatedDate").CurrentValue;
+
+            return Ok(new
+            {
+                Id = genre.Id,
+                Name = genre.Name,
+                CreatedDate = createDate
+            });
+        }
+
 
         [HttpPost]
         public async Task<ActionResult> Post(GenreCreationDTO genreCreationDTO)
         {
+            var genreName = genreCreationDTO.Name;
+
+            var genreExists = await _dbContext.Genres.AnyAsync(g => g.Name == genreName);
+
+            if (genreExists)
+                return BadRequest($"The genre with name {genreName} already exists.");
+
             var genre = _mapper.Map<Genre>(genreCreationDTO);
             _dbContext.Genres.Add(genre);
             await _dbContext.SaveChangesAsync();

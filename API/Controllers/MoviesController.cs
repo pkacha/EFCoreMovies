@@ -1,6 +1,7 @@
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Entities.Keyless;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,12 @@ namespace API.Controllers
         {
             _mapper = mapper;
             _dbContext = dbContext;
+        }
+
+        [HttpGet("withCounts")]
+        public async Task<ActionResult<IEnumerable<MovieWithCounts>>> GetWithCounts()
+        {
+            return await _dbContext.Set<MovieWithCounts>().ToListAsync();
         }
 
         [HttpGet("automapper/{id:int}")]

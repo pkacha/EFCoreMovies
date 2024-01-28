@@ -9,6 +9,8 @@ namespace API.Entities.Configurations
         {
             builder.Property(p => p.Name).IsRequired();
             builder.Property(p => p.Biography).HasColumnType("nvarchar(max)");
+            //builder.Property(p => p.Name).HasField("_name");
+            //builder.Ignore(p => p.Age);
         }
     }
 }

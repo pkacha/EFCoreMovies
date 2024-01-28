@@ -11,6 +11,7 @@ using AutoMapper.QueryableExtensions;
 using API.DTOs;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;
+using API.Entities.Keyless;
 
 namespace API.Controllers
 {
@@ -32,6 +33,12 @@ namespace API.Controllers
             return await _dbContext.Cinemas
                 .ProjectTo<CinemaDTO>(_mapper.ConfigurationProvider)
                 .ToListAsync();
+        }
+
+        [HttpGet("CinemasWithLocation")]
+        public async Task<IEnumerable<CinemaWithoutLocation>> GetWithoutLocations()
+        {
+            return await _dbContext.Set<CinemaWithoutLocation>().ToListAsync();
         }
 
         [HttpGet("closetome")]
@@ -74,11 +81,13 @@ namespace API.Controllers
                     new CinemaHall()
                     {
                         Cost = 200,
+                        Currency = Currency.DominicanPeso,
                         CinemaHallType = CinemaHallType.TwoDimensions
                     },
                      new CinemaHall()
                     {
                         Cost = 300,
+                        Currency = Currency.USDollar,
                         CinemaHallType = CinemaHallType.ThreeDimensions
                     }
                  }
