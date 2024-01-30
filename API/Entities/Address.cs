@@ -1,11 +1,14 @@
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
+
 namespace API.Entities
 {
-    //[NotMapped]
+    [Owned]
     public class Address
     {
-        public int Id { get; set; }
         public string Street { get; set; }
         public string Province { get; set; }
+        [Required]
         public string Country { get; set; }
     }
 }

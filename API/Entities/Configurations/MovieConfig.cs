@@ -7,8 +7,11 @@ namespace API.Entities.Configurations
     {
         public void Configure(EntityTypeBuilder<Movie> builder)
         {
-           builder.Property(p => p.Title).HasMaxLength(250).IsRequired();
-           builder.Property(p => p.PosterURL).HasMaxLength(500).IsUnicode(false);
+            builder.Property(p => p.Title).HasMaxLength(250).IsRequired();
+            builder.Property(p => p.PosterURL).HasMaxLength(500).IsUnicode(false);
+
+            builder.HasMany(m => m.Genres).WithMany(g => g.Movies);
+           //     .UsingEntity(mg => mg.ToTable("GenresMovies").HasData(new { MoviesId = 1, GenresId = 7 }));
         }
     }
 }

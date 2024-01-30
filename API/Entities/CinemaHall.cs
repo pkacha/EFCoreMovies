@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace API.Entities
 {
     public class CinemaHall
@@ -6,7 +8,8 @@ namespace API.Entities
         public CinemaHallType CinemaHallType { get; set; }
         public decimal Cost { get; set; }
         public Currency Currency { get; set; }
-        public int CinemaId { get; set; }
+        public int TheCinemaId { get; set; }
+        [ForeignKey(nameof(TheCinemaId))]
         public Cinema Cinema { get; set; }
         public HashSet<Movie> Movies { get; set; }
     }

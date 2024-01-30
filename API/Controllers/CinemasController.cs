@@ -70,6 +70,13 @@ namespace API.Controllers
             {
                 Name = "BMG Cinema",
                 Location = cinemaLocation, //"15 Smuts Ave, Briza Twp, Cape Town, 7130, South Africa",
+                CinemaDetail = new CinemaDetail()
+                {
+                    History = "the history...",
+                    Missions = "the missions...",
+                    Values = "the values...",
+                    CodeOfConduct = "the code of conduct..."
+                },
                 CinemaOffer = new CinemaOffer()
                 {
                     DiscountPercentage = 5,
@@ -116,6 +123,7 @@ namespace API.Controllers
             var cinemaDB = await _dbContext.Cinemas
                    .Include(c => c.CinemaHalls)
                    .Include(c => c.CinemaOffer)
+                   .Include(c => c.CinemaDetail)
                    .FirstOrDefaultAsync(c => c.Id == id);
 
             if (cinemaDB is null)
@@ -138,6 +146,20 @@ namespace API.Controllers
                 return NotFound();
 
             cinemaDB = _mapper.Map(cinemaCreationDTO, cinemaDB);
+            await _dbContext.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> Delete(int id)
+        {
+            var cinema = await _dbContext.Cinemas.Include(ch => ch.CinemaHalls).FirstOrDefaultAsync(c => c.Id == id);
+
+            if (cinema is null)
+                return NotFound();
+
+            _dbContext.Remove(cinema);
             await _dbContext.SaveChangesAsync();
 
             return Ok();

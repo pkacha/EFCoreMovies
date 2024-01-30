@@ -8,6 +8,10 @@ namespace API.Entities.Configurations
         public void Configure(EntityTypeBuilder<MovieActor> builder)
         {
             builder.HasKey(p => new { p.MovieId, p.ActorId });
+
+            builder.HasOne(ma => ma.Actor).WithMany(ma => ma.MovieActors).HasForeignKey(ma => ma.ActorId);
+
+            builder.HasOne(ma => ma.Movie).WithMany(ma => ma.MoviesActors).HasForeignKey(ma => ma.MovieId);
         }
     }
 }

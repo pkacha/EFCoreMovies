@@ -4,6 +4,7 @@ using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 
@@ -12,9 +13,10 @@ using NetTopologySuite.Geometries;
 namespace API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240129094103_CustomOnDelete")]
+    partial class CustomOnDelete
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -146,33 +148,6 @@ namespace API.Migrations
                             Location = (NetTopologySuite.Geometries.Point)new NetTopologySuite.IO.WKTReader().Read("SRID=4326;POINT (-69.939248 18.469649)"),
                             Name = "Acropolis"
                         });
-                });
-
-            modelBuilder.Entity("API.Entities.CinemaDetail", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("CodeOfConduct")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("History")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Missions")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<string>("Values")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Cinemas", (string)null);
                 });
 
             modelBuilder.Entity("API.Entities.CinemaHall", b =>
@@ -640,31 +615,6 @@ namespace API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("API.Entities.Payment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<DateTime>("PaymentDate")
-                        .HasColumnType("Date");
-
-                    b.Property<int>("PaymentType")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Payments");
-
-                    b.HasDiscriminator<int>("PaymentType");
-                });
-
             modelBuilder.Entity("API.Entities.Person", b =>
                 {
                     b.Property<int>("Id")
@@ -692,27 +642,6 @@ namespace API.Migrations
                             Id = 2,
                             Name = "Claudia"
                         });
-                });
-
-            modelBuilder.Entity("API.Entities.Product", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("CinemaHallMovie", b =>
@@ -844,224 +773,6 @@ namespace API.Migrations
                         });
                 });
 
-            modelBuilder.Entity("API.Entities.CardPayment", b =>
-                {
-                    b.HasBaseType("API.Entities.Payment");
-
-                    b.Property<string>("Last4Digits")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("char(150)");
-
-                    b.HasDiscriminator().HasValue(2);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 3,
-                            Amount = 15.99m,
-                            PaymentDate = new DateTime(2023, 12, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentType = 2,
-                            Last4Digits = "4567"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Amount = 19m,
-                            PaymentDate = new DateTime(2023, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentType = 2,
-                            Last4Digits = "1111"
-                        });
-                });
-
-            modelBuilder.Entity("API.Entities.Merchandising", b =>
-                {
-                    b.HasBaseType("API.Entities.Product");
-
-                    b.Property<bool>("Available")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsClothing")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsCollectionable")
-                        .HasColumnType("bit");
-
-                    b.Property<double>("Volume")
-                        .HasColumnType("float");
-
-                    b.Property<double>("Weight")
-                        .HasColumnType("float");
-
-                    b.ToTable("Merchandising", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 2,
-                            Name = "One Piece T-Shirt",
-                            Price = 11m,
-                            Available = true,
-                            IsClothing = true,
-                            IsCollectionable = false,
-                            Volume = 1.0,
-                            Weight = 1.0
-                        });
-                });
-
-            modelBuilder.Entity("API.Entities.PayPalPayment", b =>
-                {
-                    b.HasBaseType("API.Entities.Payment");
-
-                    b.Property<string>("EmailAddress")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("nvarchar(150)");
-
-                    b.HasDiscriminator().HasValue(1);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Amount = 123m,
-                            PaymentDate = new DateTime(2024, 1, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentType = 1,
-                            EmailAddress = "abc@hotmail.com"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Amount = 456m,
-                            PaymentDate = new DateTime(2024, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            PaymentType = 1,
-                            EmailAddress = "xyz@hotmail.com"
-                        });
-                });
-
-            modelBuilder.Entity("API.Entities.RentableMovie", b =>
-                {
-                    b.HasBaseType("API.Entities.Product");
-
-                    b.Property<int>("MovieId")
-                        .HasColumnType("int");
-
-                    b.ToTable("RentableMovies", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Spider-Man",
-                            Price = 5.99m,
-                            MovieId = 1
-                        });
-                });
-
-            modelBuilder.Entity("API.Entities.Actor", b =>
-                {
-                    b.OwnsOne("API.Entities.Address", "BillingAddress", b1 =>
-                        {
-                            b1.Property<int>("ActorId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.Property<string>("Province")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.Property<string>("Street")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.HasKey("ActorId");
-
-                            b1.ToTable("Actors");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActorId");
-                        });
-
-                    b.OwnsOne("API.Entities.Address", "HomeAddress", b1 =>
-                        {
-                            b1.Property<int>("ActorId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.Property<string>("Province")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.Property<string>("Street")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)");
-
-                            b1.HasKey("ActorId");
-
-                            b1.ToTable("Actors");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ActorId");
-                        });
-
-                    b.Navigation("BillingAddress");
-
-                    b.Navigation("HomeAddress");
-                });
-
-            modelBuilder.Entity("API.Entities.Cinema", b =>
-                {
-                    b.OwnsOne("API.Entities.Address", "Address", b1 =>
-                        {
-                            b1.Property<int>("CinemaId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Country")
-                                .IsRequired()
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)")
-                                .HasColumnName("Country");
-
-                            b1.Property<string>("Province")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)")
-                                .HasColumnName("Province");
-
-                            b1.Property<string>("Street")
-                                .HasMaxLength(150)
-                                .HasColumnType("nvarchar(150)")
-                                .HasColumnName("Street");
-
-                            b1.HasKey("CinemaId");
-
-                            b1.ToTable("Cinemas");
-
-                            b1.WithOwner()
-                                .HasForeignKey("CinemaId");
-                        });
-
-                    b.Navigation("Address");
-                });
-
-            modelBuilder.Entity("API.Entities.CinemaDetail", b =>
-                {
-                    b.HasOne("API.Entities.Cinema", "Cinema")
-                        .WithOne("CinemaDetail")
-                        .HasForeignKey("API.Entities.CinemaDetail", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Cinema");
-                });
-
             modelBuilder.Entity("API.Entities.CinemaHall", b =>
                 {
                     b.HasOne("API.Entities.Cinema", "Cinema")
@@ -1150,24 +861,6 @@ namespace API.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("API.Entities.Merchandising", b =>
-                {
-                    b.HasOne("API.Entities.Product", null)
-                        .WithOne()
-                        .HasForeignKey("API.Entities.Merchandising", "Id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("API.Entities.RentableMovie", b =>
-                {
-                    b.HasOne("API.Entities.Product", null)
-                        .WithOne()
-                        .HasForeignKey("API.Entities.RentableMovie", "Id")
-                        .OnDelete(DeleteBehavior.ClientCascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("API.Entities.Actor", b =>
                 {
                     b.Navigation("MovieActors");
@@ -1175,8 +868,6 @@ namespace API.Migrations
 
             modelBuilder.Entity("API.Entities.Cinema", b =>
                 {
-                    b.Navigation("CinemaDetail");
-
                     b.Navigation("CinemaHalls");
 
                     b.Navigation("CinemaOffer");
