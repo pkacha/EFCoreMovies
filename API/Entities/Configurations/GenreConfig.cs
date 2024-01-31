@@ -8,7 +8,7 @@ namespace API.Entities.Configurations
         public void Configure(EntityTypeBuilder<Genre> builder)
         {
             builder.Property(p => p.Name).IsRequired();
-            builder.HasQueryFilter(g => !g.IsDeleted);
+            //builder.HasQueryFilter(g => !g.IsDeleted);
             builder.HasIndex(p => p.Name).IsUnique().HasFilter("IsDeleted = 'false'");
             builder.Property<DateTime>("CreatedDate").HasDefaultValueSql("GetDate()").HasColumnType("datetime2");
         }
